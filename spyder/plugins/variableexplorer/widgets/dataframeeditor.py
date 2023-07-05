@@ -83,6 +83,7 @@ class DataframeEditorActions:
     Edit = 'edit_action'
     EditHeader = 'edit_header_action'
     EditIndex = 'edit_index_action'
+    Histogram = 'histogram'
     InsertAbove = 'insert_above_action'
     InsertAfter = 'insert_after_action'
     InsertBefore = 'insert_before_action'
@@ -682,6 +683,7 @@ class DataFrameView(QTableView, SpyderWidgetMixin):
         self.convert_to_menu = None
         self.resize_action = None
         self.resize_columns_action = None
+        self.histogram_action = None
 
         self.menu = self.setup_menu()
         self.menu_header_h = self.setup_menu_header()
@@ -904,6 +906,13 @@ class DataFrameView(QTableView, SpyderWidgetMixin):
         )
         self.copy_action.setShortcut(keybinding('Copy'))
         self.copy_action.setShortcutContext(Qt.WidgetShortcut)
+        self.histogram_action = self.create_action(
+            name=DataframeEditorActions.Histogram,
+            text=_("Histogram"),
+            icon=ima.icon('hist'),
+            triggered=self.plot_hist,
+            register_action=False
+        )
 
         # ---- Create "Convert to" submenu and actions
 
@@ -1424,6 +1433,19 @@ class DataFrameView(QTableView, SpyderWidgetMixin):
             self.model().dataChanged.emit(index, index)
             self.setCurrentIndex(self.model().index(focus_row, focus_col))
 
+    def plot_hist(self):
+        """Plot histogram of selected columns"""
+        cols = list(index.column() for index in self.selectedIndexes())
+        col_min = min(cols)
+        col_max = max(cols)
+        model = self.model()
+        col_labels = [model.header(0, col_index)
+                      for col_index in range(col_min, col_max + 1)]
+
+        import spyder.pyplot as plt
+        model.df.hist(column=col_labels)
+        plt.show()
+
 
 class DataFrameHeaderModel(QAbstractTableModel, SpyderFontsMixin):
     """
@@ -1941,6 +1963,7 @@ class DataFrameEditor(BaseDialog, SpyderWidgetMixin):
             self.dataTable.duplicate_col_action,
             self.dataTable.remove_col_action,
             stretcher,
+            self.dataTable.histogram_action,
             self.dataTable.resize_action,
             self.dataTable.resize_columns_action,
             self.refresh_action,
