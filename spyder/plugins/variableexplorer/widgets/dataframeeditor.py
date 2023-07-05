@@ -622,10 +622,13 @@ class DataFrameView(QTableView, SpyderConfigurationAccessor):
                                     icon=ima.icon('editcopy'),
                                     triggered=self.copy,
                                     context=Qt.WidgetShortcut)
+        hist_action = create_action(self, _("Histogram"),
+                                    icon=ima.icon('hist'),
+                                    triggered=self.plot_hist)
         functions = ((_("To bool"), bool), (_("To complex"), complex),
                      (_("To int"), int), (_("To float"), float),
                      (_("To str"), to_text_string))
-        types_in_menu = [copy_action]
+        types_in_menu = [copy_action, hist_action]
         for name, func in functions:
             def slot():
                 self.change_type(func)
@@ -669,6 +672,19 @@ class DataFrameView(QTableView, SpyderConfigurationAccessor):
         output.close()
         clipboard = QApplication.clipboard()
         clipboard.setText(contents)
+
+    def plot_hist(self):
+        """Plot histogram of selected columns"""
+        cols = list(index.column() for index in self.selectedIndexes())
+        col_min = min(cols)
+        col_max = max(cols)
+        model = self.model()
+        col_labels = [model.header(0, col_index)
+                      for col_index in range(col_min, col_max + 1)]
+
+        import spyder.pyplot as plt
+        model.df.hist(column=col_labels)
+        plt.show()
 
 
 class DataFrameHeaderModel(QAbstractTableModel, SpyderFontsMixin):
