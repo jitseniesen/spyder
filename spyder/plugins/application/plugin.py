@@ -39,7 +39,8 @@ class Application(SpyderPluginV2):
     NAME = 'application'
     REQUIRES = [Plugins.Console, Plugins.Preferences]
     OPTIONAL = [Plugins.Help, Plugins.MainMenu, Plugins.Shortcuts,
-                Plugins.Editor, Plugins.StatusBar, Plugins.UpdateManager]
+                Plugins.Editor, Plugins.StatusBar, Plugins.UpdateManager,
+                Plugins.Toolbar]
     CONTAINER_CLASS = ApplicationContainer
     CONF_SECTION = 'main'
     CONF_FILE = False
@@ -111,7 +112,8 @@ class Application(SpyderPluginV2):
         container = self.get_container()
         toolbar = self.get_plugin(Plugins.Toolbar)
         for action in [
-            container.new_action
+            container.new_action,
+            container.open_action
         ]:
             toolbar.add_item_to_application_toolbar(
                 action,
@@ -151,7 +153,8 @@ class Application(SpyderPluginV2):
     def on_toolbar_teardown(self):
         toolbar = self.get_plugin(Plugins.Toolbar)
         for action in [
-            ApplicationActions.NewFile
+            ApplicationActions.NewFile,
+            ApplicationActions.OpenFile
         ]:
             toolbar.remove_item_from_application_toolbar(
                 action,
@@ -199,13 +202,21 @@ class Application(SpyderPluginV2):
         container = self.get_container()
         mainmenu = self.get_plugin(Plugins.MainMenu)
         mainmenu.add_item_to_application_menu(
+            container.open_action,
+            menu_id=ApplicationMenus.File,
+            section=FileMenuSections.Open,
+            before_section=FileMenuSections.Save
+        )
+        mainmenu.add_item_to_application_menu(
             self.restart_action,
             menu_id=ApplicationMenus.File,
-            section=FileMenuSections.Restart)
+            section=FileMenuSections.Restart
+        )
         mainmenu.add_item_to_application_menu(
             self.restart_debug_action,
             menu_id=ApplicationMenus.File,
-            section=FileMenuSections.Restart)
+            section=FileMenuSections.Restart
+        )
 
         # New Section
         mainmenu.add_item_to_application_menu(
@@ -318,6 +329,7 @@ class Application(SpyderPluginV2):
         mainmenu = self.get_plugin(Plugins.MainMenu)
         for action_id in [
             ApplicationActions.NewFile,
+            ApplicationActions.OpenFile,
             ApplicationActions.SpyderRestart,
             ApplicationActions.SpyderRestartDebug
         ]:

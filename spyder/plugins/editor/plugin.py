@@ -395,7 +395,6 @@ class Editor(SpyderDockablePlugin):
 
         # Open section
         open_actions = [
-            widget.open_action,
             widget.open_last_closed_action,
             widget.recent_file_menu,
         ]
@@ -568,7 +567,6 @@ class Editor(SpyderDockablePlugin):
 
         # Open section
         open_actions = [
-            widget.open_action,
             widget.open_last_closed_action,
             widget.recent_file_menu,
         ]
@@ -686,6 +684,7 @@ class Editor(SpyderDockablePlugin):
         widget = self.get_widget()
         toolbar = self.get_plugin(Plugins.Toolbar)
         file_toolbar_actions = [
+            widget.new_action,
             widget.open_action,
             widget.save_action,
             widget.save_all_action,
@@ -701,6 +700,7 @@ class Editor(SpyderDockablePlugin):
     def on_toolbar_teardown(self):
         toolbar = self.get_plugin(Plugins.Toolbar)
         file_toolbar_actions = [
+            EditorWidgetActions.NewFile,
             EditorWidgetActions.OpenFile,
             EditorWidgetActions.SaveFile,
             EditorWidgetActions.SaveAll,

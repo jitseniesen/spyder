@@ -63,6 +63,7 @@ class ApplicationActions:
 
     # File
     NewFile = "New file"
+    OpenFile = "Open file"
     # The name of the action needs to match the name of the shortcut
     # so 'Restart' is used instead of something like 'restart_action'
     SpyderRestart = "Restart"
@@ -201,6 +202,17 @@ class ApplicationContainer(PluginMainContainer):
             tip=_("New file"),
             triggered=self.sig_new_file_requested.emit,
             shortcut_context="main",
+            register_shortcut=True
+        )
+
+        self.open_action = self.create_action(
+            ApplicationActions.OpenFile,
+            text=_("&Open..."),
+            icon=self.create_icon('fileopen'),
+            tip=_("Open file"),
+            triggered=self.open_file_using_dialog,
+            context=Qt.ApplicationShortcut,
+            shortcut_context="_",
             register_shortcut=True
         )
 
@@ -347,6 +359,14 @@ class ApplicationContainer(PluginMainContainer):
             return
 
         self.sig_restart_requested.emit()
+
+    # ---- File actions
+    # -------------------------------------------------------------------------
+    def open_file_using_dialog(self):
+        """Show Open File dialog and open the selected file"""
+        # For the moment, we use the function in the Editor plugin.
+        # This is only a temporary hack so it is not done properly.
+        self._plugin.main.editor.get_widget().load()
 
     # ---- Log files
     # -------------------------------------------------------------------------

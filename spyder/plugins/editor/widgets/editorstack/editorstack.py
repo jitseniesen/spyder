@@ -46,7 +46,6 @@ from spyder.plugins.editor.utils.editor import get_file_language
 from spyder.plugins.editor.widgets import codeeditor
 from spyder.plugins.editor.widgets.editorstack.helpers import (
     ThreadManager, FileInfo, StackHistory)
-from spyder.plugins.editor.widgets.main_widget import EditorWidgetActions
 from spyder.plugins.editor.widgets.tabswitcher import TabSwitcherWidget
 from spyder.plugins.explorer.widgets.explorer import (
     show_in_external_file_explorer)
@@ -1312,7 +1311,10 @@ class EditorStack(QWidget, SpyderWidgetMixin):
                 ApplicationActions.NewFile,
                 plugin=Plugins.Application
             )
-            open_action = self.get_action(EditorWidgetActions.OpenFile)
+            open_action = self.get_action(
+                ApplicationActions.OpenFile,
+                plugin=Plugins.Application
+            )
             for menu_action in (new_action, open_action):
                 self.menu.add_action(menu_action)
 

@@ -46,6 +46,7 @@ from spyder.utils.icon_manager import ima
 from spyder.utils.qthelpers import create_action
 from spyder.utils.misc import getcwd_or_home
 from spyder.widgets.findreplace import FindReplace
+from spyder.plugins.application.api import ApplicationActions
 from spyder.plugins.editor.api.run import (
     EditorRunConfiguration, FileRun, SelectionRun, CellRun,
     SelectionContextModificator, ExtraAction)
@@ -74,7 +75,6 @@ logger = logging.getLogger(__name__)
 class EditorWidgetActions:
     # File operations
     OpenLastClosed = "Open last closed"
-    OpenFile = "Open file"
     RevertFileFromDisk = "Revert file from disk"
     SaveFile = "Save file"
     SaveAll = "Save all"
@@ -374,15 +374,6 @@ class EditorMainWidget(PluginMainWidget):
             text=_("O&pen last closed"),
             tip=_("Open last closed"),
             triggered=self.open_last_closed,
-            register_shortcut=True
-        )
-        self.open_action = self.create_action(
-            EditorWidgetActions.OpenFile,
-            text=_("&Open..."),
-            icon=self.create_icon('fileopen'),
-            tip=_("Open file"),
-            triggered=self.load,
-            context=Qt.WidgetShortcut,
             register_shortcut=True
         )
         self.revert_action = self.create_action(
