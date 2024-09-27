@@ -75,6 +75,7 @@ def test_default_keybinding_values():
     assert CONF.get_shortcut('editor', 'next word') == 'Ctrl+Right'
     assert CONF.get_shortcut('editor', 'previous word') == 'Ctrl+Left'
     assert CONF.get_shortcut('main', 'new file') == 'Ctrl+N'
+    assert CONF.get_shortcut('main', 'open file') == 'Ctrl+O'
 
 
 @pytest.mark.skipif(
@@ -364,16 +365,20 @@ def test_shortcuts_for_new_editors(editorstack, qtbot):
     qtbot.keyClick(editor, Qt.Key_1, modifier=Qt.ControlModifier)
     assert editor.toPlainText() == '# Line5\nLine6\nLine7\nLine8\n'
 
-
-def test_new_file_shortcut(editorstack, qtbot):
+@pytest.mark.parametrize(
+    'key, modifier, action',
+    [
+        (Qt.Key_N, Qt.ControlModifier, 'New file'),
+        (Qt.Key_O, Qt.ControlModifier, 'Open file'),
+])
+def test_file_shortcut(editorstack, qtbot, key, modifier, action):
     """
-    Test that typing "New File" shortcut raises the signal requesting that a
-    new file be created.
+    Test that typing file shortcuts raises the corresponding signal.
     """
     editor = editorstack.get_current_editor()
     with qtbot.waitSignal(editorstack.sig_trigger_action) as blocker:
-        qtbot.keyClick(editor, Qt.Key_N, modifier=Qt.ControlModifier)
-    assert blocker.args == ['New file', Plugins.Application]
+        qtbot.keyClick(editor, key, modifier=modifier)
+    assert blocker.args == [action, Plugins.Application]
 
 
 if __name__ == "__main__":
