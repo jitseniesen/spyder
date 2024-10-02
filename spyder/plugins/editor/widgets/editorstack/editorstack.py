@@ -452,7 +452,6 @@ class EditorStack(QWidget, SpyderWidgetMixin):
             ('Cycle to previous file', lambda: self.tabs.tab_navigate(-1)),
             ('Cycle to next file', lambda: self.tabs.tab_navigate(1)),
             ('New file', self.sig_new_file[()]),
-            ('Open file', self.plugin_load[()]),
             ('Save file', self.save),
             ('Save all', self.save_all),
             ('Save As', self.sig_save_as),
@@ -519,6 +518,20 @@ class EditorStack(QWidget, SpyderWidgetMixin):
                     Plugins.Debugger
                 ),
                 context=Plugins.Debugger,
+            )
+
+        # Register shortcuts for file actions defined in Applications plugin
+        for action_id in [
+            "Open file",
+        ]:
+            self.register_shortcut_for_widget(
+                name=action_id,
+                triggered=functools.partial(
+                    self.sig_trigger_action.emit,
+                    action_id,
+                    Plugins.Application
+                ),
+                context='main',
             )
 
     def update_switcher_actions(self, switcher_available):
