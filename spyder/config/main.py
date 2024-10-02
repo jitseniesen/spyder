@@ -391,6 +391,7 @@ DEFAULTS = [
               '_/fullscreen mode': "F11",
               '_/save current layout': "Shift+Alt+S",
               '_/layout preferences': "Shift+Alt+P",
+              '_/open file': "Ctrl+O",
               '_/spyder documentation': "F1",
               '_/restart': "Shift+Alt+R",
               '_/quit': "Ctrl+Q",
@@ -469,7 +470,6 @@ DEFAULTS = [
               'editor/cycle to next file': 'Ctrl+PgDown',
               'editor/new file': "Ctrl+N",
               'editor/open last closed':"Ctrl+Shift+T",
-              'editor/open file': "Ctrl+O",
               'editor/save file': "Ctrl+S",
               'editor/save all': "Ctrl+Alt+S",
               'editor/save as': 'Ctrl+Shift+S',
@@ -672,4 +672,4 @@ NAME_MAP = {
 #    or if you want to *rename* options, then you need to do a MAJOR update in
 #    version, e.g. from 3.0.0 to 4.0.0
 # 3. You don't need to touch this value if you're just adding a new option
-CONF_VERSION = '84.2.0'
+CONF_VERSION = '85.0.0'

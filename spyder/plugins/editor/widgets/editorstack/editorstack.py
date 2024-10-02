@@ -441,7 +441,6 @@ class EditorStack(QWidget, SpyderWidgetMixin):
             ('Cycle to previous file', lambda: self.tabs.tab_navigate(-1)),
             ('Cycle to next file', lambda: self.tabs.tab_navigate(1)),
             ('New file', self.sig_new_file[()]),
-            ('Open file', self.plugin_load[()]),
             ('Save file', self.save),
             ('Save all', self.save_all),
             ('Save As', self.sig_save_as),
