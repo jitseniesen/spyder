@@ -13,15 +13,18 @@ import os
 import os.path as osp
 import subprocess
 import sys
+from typing import Optional
 
 # Third party imports
 from qtpy.QtCore import Slot
+from qtpy.QtWidgets import QApplication
 
 # Local imports
-from spyder.api.plugins import Plugins, SpyderPluginV2
+from spyder.api.plugins import Plugins, SpyderPluginV2, SpyderDockablePlugin
 from spyder.api.translations import _
 from spyder.api.plugin_registration.decorators import (
     on_plugin_available, on_plugin_teardown)
+from spyder.api.plugin_registration.registry import PLUGIN_REGISTRY
 from spyder.api.widgets.menus import SpyderMenu, MENU_SEPARATOR
 from spyder.config.base import (get_module_path, get_debug_level,
                                 running_under_pytest)
@@ -429,6 +432,23 @@ class Application(SpyderPluginV2):
             # the error can be inspected in the internal console
             print(error)  # spyder: test-skip
             print(command)  # spyder: test-skip
+
+    def get_focused_plugin(self) -> Optional[SpyderDockablePlugin]:
+        """
+        Return the plugin that currently has focus.
+
+        Go through all available dockable plugins and return the first one
+        which is an ancestor of the currently focused widget. If none is
+        found, then return `None`.
+        """
+        if focus_widget := QApplication.focusWidget():
+            for plugin_name in PLUGIN_REGISTRY:
+                if self.is_plugin_available(plugin_name):
+                    plugin = PLUGIN_REGISTRY.get_plugin(plugin_name)
+                    if isinstance(plugin, SpyderDockablePlugin):
+                        widget = plugin.get_widget()
+                        if widget.isAncestorOf(focus_widget):
+                            return plugin
 
     def open_file_using_dialog(self) -> None:
         """
