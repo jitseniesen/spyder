@@ -453,8 +453,22 @@ class Application(SpyderPluginV2):
         """
         Open given file in a suitable plugin.
 
-        For the moment, this opens the file in the Editor plugin.
+        Go through all plugins and open the file in the first plugin that
+        registered the extension of the given file name. If none is found,
+        then open the file in the Editor plugin.
         """
+        ext = osp.splitext(filename)[1]
+        for plugin_name in PLUGIN_REGISTRY:
+            if PLUGIN_REGISTRY.is_plugin_available(plugin_name):
+                plugin = PLUGIN_REGISTRY.get_plugin(plugin_name)
+                if (
+                    isinstance(plugin, SpyderDockablePlugin)
+                    and ext in plugin.FILE_EXTENSIONS
+                ):
+                    plugin.switch_to_plugin()
+                    plugin.open_file(filename)
+                    return
+
         if self.is_plugin_available(Plugins.Editor):
             editor = self.get_plugin(Plugins.Editor)
             editor.load(filename)
