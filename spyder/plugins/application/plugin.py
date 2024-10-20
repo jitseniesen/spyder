@@ -69,6 +69,9 @@ class Application(SpyderPluginV2):
         container.sig_open_file_in_plugin_requested.connect(
             self.open_file_in_plugin
         )
+        container.sig_open_file_using_dialog_requested.connect(
+            self.open_file_using_dialog
+        )
         container.set_window(self._window)
 
     # --------------------- PLUGIN INITIALIZATION -----------------------------
