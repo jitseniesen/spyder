@@ -69,7 +69,7 @@ class Application(SpyderPluginV2):
     def on_initialize(self):
         container = self.get_container()
         container.sig_report_issue_requested.connect(self.report_issue)
-        container.sig_new_file_requested.connect(self.new_file)
+        container.sig_new_file_requested.connect(self.create_new_file)
         container.sig_open_file_in_plugin_requested.connect(
             self.open_file_in_plugin
         )
@@ -482,6 +482,21 @@ class Application(SpyderPluginV2):
         This function is called if another plugin gets keyboard focus.
         """
         self.focused_plugin = plugin
+
+    def create_new_file(self) -> None:
+        """
+        Create new file in a suitable plugin.
+
+        If the plugin that currently has focus, has its
+        `CAN_HANDLE_FILE_ACTIONS` attribute set to `True`, then create a new
+        file in that plugin. Otherwise, create a new file in the Editor plugin.
+        """
+        plugin = self.focused_plugin
+        if plugin and getattr(plugin, 'CAN_HANDLE_FILE_ACTIONS', False):
+            plugin.create_new_file()
+        elif self.is_plugin_available(Plugins.Editor):
+            editor = self.get_plugin(Plugins.Editor)
+            editor.new()
 
     def open_file_using_dialog(self) -> None:
         """
