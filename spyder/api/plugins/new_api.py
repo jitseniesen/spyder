@@ -994,6 +994,11 @@ class SpyderDockablePlugin(SpyderPluginV2):
     # create a new file in the plugin.
     CAN_CREATE_NEW_FILE = False
 
+    # Whether the plugin can re-open the last closed file.
+    # If True, then the `open_last_closed_file` function will be called if
+    # the user selects the "Open last closed" item in the File menu.
+    CAN_OPEN_LAST_CLOSED_FILE = False
+
     # ---- API: Available signals
     # -------------------------------------------------------------------------
     sig_focus_changed = Signal()
@@ -1099,6 +1104,16 @@ class SpyderDockablePlugin(SpyderPluginV2):
         ----------
         filename: str
             The name of the file to be opened.
+        """
+        raise NotImplementedError
+
+    def open_last_closed_file(self) -> None:
+        """
+        Open the last closed file again.
+
+        This function will be called if the `File > Open last closed` menu item
+        is selected while the plugin has focus and `CAN_OPEN_LAST_CLOSE_FILE`
+        is set to `True`.
         """
         raise NotImplementedError
 
