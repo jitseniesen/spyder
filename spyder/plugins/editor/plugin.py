@@ -781,7 +781,7 @@ class Editor(SpyderDockablePlugin):
         application = self.get_plugin(Plugins.Application)
         widget = self.get_widget()
         widget.sig_new_recent_file.connect(application.add_recent_file)
-        widget.sig_save_action_enabled.connect(application.enable_save_action)
+        widget.sig_save_action_enabled.connect(self._enable_save_action)
 
     @on_plugin_teardown(plugin=Plugins.Application)
     def on_application_teardown(self):
@@ -1282,3 +1282,11 @@ class Editor(SpyderDockablePlugin):
         if debugger is None:
             return True
         return debugger.can_close_file(filename)
+
+    # ---- Methods related to Application plugin
+    def _enable_save_action(self, state: bool):
+        """
+        Enable or disable save action for this plugin.
+        """
+        application = self.get_plugin(Plugins.Application, error=False)
+        application.enable_save_action(state, self)

@@ -999,6 +999,11 @@ class SpyderDockablePlugin(SpyderPluginV2):
     # the user selects the "Open last closed" item in the File menu.
     CAN_OPEN_LAST_CLOSED_FILE = False
 
+    # Whether the plugin save the current file.
+    # If True, then the `save_file` function will be called if the user
+    # wants to save the current file.
+    CAN_SAVE_FILE = False
+
     # ---- API: Available signals
     # -------------------------------------------------------------------------
     sig_focus_changed = Signal()
@@ -1114,6 +1119,16 @@ class SpyderDockablePlugin(SpyderPluginV2):
         This function will be called if the `File > Open last closed` menu item
         is selected while the plugin has focus and `CAN_OPEN_LAST_CLOSE_FILE`
         is set to `True`.
+        """
+        raise NotImplementedError
+
+    def save_file(self) -> None:
+        """
+        Save the current file.
+
+        This function will be called if the user saves the current file using
+        the `File > Save` menu item or the "Save file" button in the toolbar,
+        the plugin has focus, and `CAN_SAVE_FILE` is set to `True`.
         """
         raise NotImplementedError
 

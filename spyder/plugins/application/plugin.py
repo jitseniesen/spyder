@@ -53,6 +53,7 @@ class Application(SpyderPluginV2):
     def __init__(self, parent, configuration=None):
         super().__init__(parent, configuration)
         self.focused_plugin: Optional[SpyderDockablePlugin] = None
+        self.save_enabled: dict[SpyderDockablePlugin, bool] = {}
 
     @staticmethod
     def get_name():
@@ -505,6 +506,7 @@ class Application(SpyderPluginV2):
         This function is called if another plugin gets keyboard focus.
         """
         self.focused_plugin = plugin
+        self.update_save_action()
 
     def create_new_file(self) -> None:
         """
@@ -602,22 +604,46 @@ class Application(SpyderPluginV2):
         """
         Save current file.
 
-        For the moment, this instructs the Editor plugin to save the current
-        file.
+        If the plugin that currently has focus, has its `CAN_SAVE_FILE`
+        attribute set to `True`, then save the current file in that plugin.
+        Otherwise, save the current file in the Editor plugin.
         """
-        editor = self.get_plugin(Plugins.Editor)
-        editor.save()
+        plugin = self.focused_plugin
+        if plugin and getattr(plugin, 'CAN_SAVE_FILE', False):
+            plugin.save_file()
+        elif self.is_plugin_available(Plugins.Editor):
+            editor = self.get_plugin(Plugins.Editor)
+            editor.save()
 
-    def enable_save_action(self, state: bool) -> None:
+    def enable_save_action(
+            self, state: bool, plugin: SpyderDockablePlugin
+    ) -> None:
         """
-        Enable or disable save action.
+        Enable or disable save action for given plugin.
 
         Parameters
         ----------
         state : bool
             True to enable save action, False to disable it.
+        plugin : SpyderDockablePlugin
+            The plugin for which the save action is enabled or disabled.
         """
-        self.get_container().save_action.setEnabled(state)
+        self.save_enabled[plugin] = state
+        self.update_save_action()
+
+    def update_save_action(self) -> None:
+        """
+        Update whether save action is enabled.
+
+        The save action is enabled depending on whether the plugin that would
+        process the save action has enabled it or not.
+        """
+        plugin = self.focused_plugin
+        if not plugin or not getattr(plugin, 'CAN_SAVE_FILE', False):
+            plugin = self.get_plugin(Plugins.Editor, error=False)
+        if plugin:
+            state = self.save_enabled.get(plugin, True)
+            self.get_container().save_action.setEnabled(state)
 
     @property
     def documentation_action(self):
