@@ -276,7 +276,7 @@ def test_next_and_previous_word_shortcuts(editorstack, qtbot):
     assert editor.get_cursor_line_column() == (0, 0)
 
 
-@pytest.mark.skipif(sys.platform == 'darwin', reason="Not valid in macOS")
+@pytest.mark.skip # if(sys.platform == 'darwin', reason="Not valid in macOS")
 def test_builtin_shift_del_and_ins(editorstack, qtbot):
     """
     Test that the builtin key sequences Ctrl+Ins, Shit+Del and Shift+Ins result
