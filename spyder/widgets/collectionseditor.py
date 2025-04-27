@@ -726,8 +726,9 @@ class BaseTableView(QTableView, SpyderWidgetMixin):
         self.adjust_columns()
 
         # Sorting columns
+        self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
         self.setSortingEnabled(True)
-        self.sortByColumn(0, Qt.AscendingOrder)
+        # self.sortByColumn(0, Qt.AscendingOrder)  # Jitse
 
         # Actions to take when the selection changes
         self.selectionModel().selectionChanged.connect(self.refresh_menu)
