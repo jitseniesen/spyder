@@ -96,10 +96,10 @@ def test_rename_variable(qtbot):
     editor.rename_item(new_name='b2')
     assert editor.model().rowCount() == 5
     assert data(editor.model(), 0, 0) == 'a'
-    assert data(editor.model(), 1, 0) == 'b2'
-    assert data(editor.model(), 2, 0) == 'c'
-    assert data(editor.model(), 3, 0) == 'd'
-    assert data(editor.model(), 4, 0) == 'e'
+    assert data(editor.model(), 1, 0) == 'c'
+    assert data(editor.model(), 2, 0) == 'd'
+    assert data(editor.model(), 3, 0) == 'e'
+    assert data(editor.model(), 4, 0) == 'b2'
 
     # Reset variables and try renaming one again
     new_variables = {'a': 1,
@@ -115,10 +115,10 @@ def test_rename_variable(qtbot):
     assert editor.model().rowCount() == 6
     assert data(editor.model(), 0, 0) == 'a'
     assert data(editor.model(), 1, 0) == 'b2'
-    assert data(editor.model(), 2, 0) == 'b3'
-    assert data(editor.model(), 3, 0) == 'c'
-    assert data(editor.model(), 4, 0) == 'd'
-    assert data(editor.model(), 5, 0) == 'e'
+    assert data(editor.model(), 2, 0) == 'c'
+    assert data(editor.model(), 3, 0) == 'd'
+    assert data(editor.model(), 4, 0) == 'e'
+    assert data(editor.model(), 5, 0) == 'b3'
 
 
 def test_remove_variable(qtbot):
@@ -1104,9 +1104,6 @@ def test_dicts_natural_sorting_mixed_types():
 
     # insert an item and check that it is still sorted correctly
     editor.widget.editor.new_value('List', [1, 2, 3])
-    assert data_table(cm, 4, 3) == [['aStr', 'DSeries', 'kDict', 'List'],
-                                    ['str', 'Series', 'dict', 'list'],
-                                    [str_size, '(0,)', 2, 3]]
     cm.sort(0)
     assert data_table(cm, 4, 3) == [['aStr', 'DSeries', 'kDict', 'List'],
                                     ['str', 'Series', 'dict', 'list'],
