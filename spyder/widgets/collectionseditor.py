@@ -32,7 +32,7 @@ import warnings
 from qtpy.compat import getsavefilename, to_qvariant
 from qtpy.QtCore import (
     QAbstractTableModel, QItemSelectionModel, QModelIndex, Qt, QTimer, Signal,
-    Slot)
+    Slot, QSortFilterProxyModel)
 from qtpy.QtGui import QColor, QKeySequence
 from qtpy.QtWidgets import (
     QApplication, QHBoxLayout, QHeaderView, QInputDialog, QLineEdit,
@@ -222,7 +222,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
 
         if (
             coll_filter is not None
-            and not self.remote 
+            and not self.remote
             and isinstance(data, (tuple, list, dict, set, frozenset))
         ):
             data = coll_filter(data)
@@ -652,6 +652,47 @@ class BaseHeaderView(QHeaderView):
     def sectionResizeEvent(self, logicalIndex, oldSize, newSize):
         if self._handle_section_is_pressed:
             self.sig_user_resized_section.emit(logicalIndex, oldSize, newSize)
+
+
+class AllowUnsortedProxyModel(QSortFilterProxyModel):
+    """
+    Proxy model which allows table to be unsorted.
+
+    In Qt, a proxy model sits between the real model and the view amd is
+    responsible for sorting (and filtering). This class implements a proxy
+    model with three states: unsorted, sort ascending and sort descending.
+    Normally, there is no unsorted view.
+
+    In Qt 6, the `sortIndicatorClearable` flag has the same function. This
+    implementation is based on https://stackoverflow.com/a/18716223 .
+    """
+
+    sig_adjust_order_requested = Signal(int, int)
+    """
+    This signal is emitted when sort() is called to request that the sort
+    state is adjusted.
+
+    Parameters
+    ----------
+    column: int
+        The column to be sorted
+    order: int
+        The new sort order.
+    """
+
+    def sort(self, column: int, order: int) -> None:
+        """
+        Called automatically when column is about to be sorted.
+
+        Overridden in order to implement the unsorted state.
+        """
+        self.sig_adjust_order_requested(column, order).emit()
+
+    def real_sort(self, column: int, order: int) -> None:
+        """
+        Sort a column in the given order.
+        """
+        super().sort(column, order)
 
 
 class BaseTableView(QTableView, SpyderWidgetMixin):
