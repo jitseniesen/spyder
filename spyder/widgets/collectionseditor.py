@@ -1650,7 +1650,11 @@ class CollectionsEditorTableView(BaseTableView):
             names=names,
             minmax=self.get_conf('minmax')
         )
-        self.setModel(self.source_model)
+        self.proxy_model = AllowUnsortedProxyModel(self)
+        self.proxy_model.setSourceModel(self.source_model)
+        self.proxy_model.sig_adjust_order_requested.connect(self.adjust_order)
+        self.setModel(self.proxy_model)
+        self.previous_sort = -1
         self.delegate = CollectionsDelegate(
             self, namespacebrowser, data_function
         )
@@ -1660,6 +1664,23 @@ class CollectionsEditorTableView(BaseTableView):
         self.menu = self.setup_menu()
         if isinstance(data, (set, frozenset)):
             self.horizontalHeader().hideSection(0)
+
+    def adjust_order(self, column, order):
+        print(f'adjust_order: {column = }, {order = }, {self.previous_sort = }')
+        header = self.horizontalHeader()
+        if (
+            header.sortIndicatorOrder() == Qt.AscendingOrder
+            and header.isSortIndicatorShown()
+            and self.previous_sort == column
+        ):
+            header.setSortIndicator(column, Qt.DescendingOrder)
+            header.setSortIndicatorShown(False)
+            column = -1
+        else:
+            header.setSortIndicatorShown(True)
+        self.previous_sort = column
+        print(f'adjust_order: {column = }, {order = }, {self.previous_sort = }')
+        self.proxy_model.real_sort(column, order)
 
     #------ Remote/local API --------------------------------------------------
     def remove_values(self, keys):
