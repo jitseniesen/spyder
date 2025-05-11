@@ -1657,9 +1657,9 @@ class CollectionsEditorTableView(BaseTableView):
         self.menu = self.setup_menu()
 
         # Sorting columns
-        self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
+        column = -1 if isinstance(data, dict) else 0
+        self.horizontalHeader().setSortIndicator(column, Qt.AscendingOrder)
         self.setSortingEnabled(True)
-        # self.sortByColumn(0, Qt.AscendingOrder)  # Jitse
 
         if isinstance(data, (set, frozenset)):
             self.horizontalHeader().hideSection(0)
@@ -2126,9 +2126,8 @@ class RemoteCollectionsEditorTableView(BaseTableView):
             self.menu = self.setup_menu()
 
         # Sorting columns
-        self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
+        self.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
         self.setSortingEnabled(True)
-        # self.sortByColumn(0, Qt.AscendingOrder)  # Jitse
 
     # ------ Remote/local API -------------------------------------------------
     def get_value(self, name):
