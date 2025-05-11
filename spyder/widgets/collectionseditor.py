@@ -723,11 +723,6 @@ class BaseTableView(QTableView, SpyderWidgetMixin):
         self.horizontalHeader().setSectionsMovable(True)
         self.adjust_columns()
 
-        # Sorting columns
-        self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
-        self.setSortingEnabled(True)
-        # self.sortByColumn(0, Qt.AscendingOrder)  # Jitse
-
         # Actions to take when the selection changes
         self.selectionModel().selectionChanged.connect(self.refresh_menu)
         self.selectionModel().selectionChanged.connect(
@@ -1660,6 +1655,12 @@ class CollectionsEditorTableView(BaseTableView):
 
         self.setup_table()
         self.menu = self.setup_menu()
+
+        # Sorting columns
+        self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
+        self.setSortingEnabled(True)
+        # self.sortByColumn(0, Qt.AscendingOrder)  # Jitse
+
         if isinstance(data, (set, frozenset)):
             self.horizontalHeader().hideSection(0)
 
@@ -2123,6 +2124,11 @@ class RemoteCollectionsEditorTableView(BaseTableView):
 
         if create_menu:
             self.menu = self.setup_menu()
+
+        # Sorting columns
+        self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
+        self.setSortingEnabled(True)
+        # self.sortByColumn(0, Qt.AscendingOrder)  # Jitse
 
     # ------ Remote/local API -------------------------------------------------
     def get_value(self, name):
