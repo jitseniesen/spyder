@@ -191,7 +191,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
     sig_setting_data = Signal()
 
     def __init__(self, parent, data, title="", names=False,
-                 minmax=False, remote=False):
+                 minmax=False, remote=False, column_count=4):
         QAbstractTableModel.__init__(self, parent)
         if data is None:
             data = {}
@@ -203,6 +203,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
         self.header0 = None
         self._data = None
         self.total_rows = None
+        self._column_count = column_count
         self.showndata = None
         self.keys = None
         self.title = to_text_string(title)  # in case title is not a string
@@ -368,10 +369,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
 
     def columnCount(self, qindex=QModelIndex()):
         """Array column number"""
-        if self._parent.proxy_model:
-            return 5
-        else:
-            return 4
+        return self._column_count
 
     def rowCount(self, index=QModelIndex()):
         """Array row number"""
@@ -2097,7 +2095,7 @@ class RemoteCollectionsEditorTableView(BaseTableView):
         self.source_model = CollectionsModel(
             self, data, names=True,
             minmax=self.get_conf('minmax'),
-            remote=True)
+            remote=True, column_count=5)
 
         self.horizontalHeader().sectionClicked.connect(
             self.source_model.load_all)
