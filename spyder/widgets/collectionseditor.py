@@ -1657,8 +1657,12 @@ class CollectionsEditorTableView(BaseTableView):
         self.menu = self.setup_menu()
 
         # Sorting columns
-        column = -1 if isinstance(data, dict) else 0
-        self.horizontalHeader().setSortIndicator(column, Qt.AscendingOrder)
+        if isinstance(data, dict):
+            self.allow_unsorted = True
+            self.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
+        else:
+            self.allow_unsorted = False
+            self.horizontalHeader().setSortIndicator(0, Qt.AscendingOrder)
         self.setSortingEnabled(True)
 
         if isinstance(data, (set, frozenset)):
@@ -1671,6 +1675,7 @@ class CollectionsEditorTableView(BaseTableView):
             header.sortIndicatorOrder() == Qt.AscendingOrder
             and header.isSortIndicatorShown()
             and self.previous_sort == column
+            and self.allow_unsorted
         ):
             header.setSortIndicator(column, Qt.DescendingOrder)
             header.setSortIndicatorShown(False)
@@ -1680,6 +1685,11 @@ class CollectionsEditorTableView(BaseTableView):
         self.previous_sort = column
         print(f'adjust_order: {column = }, {order = }, {self.previous_sort = }')
         self.proxy_model.real_sort(column, order)
+
+    def set_data(self, data):
+        """Set table data"""
+        self.allow_unsorted = isinstance(data, dict)
+        super().set_data(data)
 
     #------ Remote/local API --------------------------------------------------
     def remove_values(self, keys):
