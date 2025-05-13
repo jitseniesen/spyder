@@ -527,9 +527,10 @@ def test_sort_and_fetch_collectionsmodel_with_many_rows():
     assert cm.rowCount() == len(coll)
 
 
-def test_dict_in_tableview_sorting():
+def test_dict_in_tableview_sorting(qtbot):
     my_dict = {2: 3, 3: 1, 1: 2}
     editor = CollectionsEditorTableView(None, my_dict)
+    editor.show()
 
     # Test that dict is displayed in insertion order
     assert data(editor.model(), 0, 0) == 2
@@ -538,6 +539,19 @@ def test_dict_in_tableview_sorting():
     assert data(editor.model(), 0, 3) == '3'
     assert data(editor.model(), 1, 3) == '1'
     assert data(editor.model(), 2, 3) == '2'
+
+    header = editor.horizontalHeader()
+    for sec in range(4):
+        print(f'{sec=}, {header.sectionPosition(sec)=}, {header.sectionSize(sec)=}')
+    print(header.logicalIndexAt(header.sectionSize(0) + 1))
+    with qtbot.waitSignal(header.sectionClicked, timeout=200):
+        qtbot.mouseClick(header.viewport(), Qt.LeftButton, pos=QPoint(1, 1))
+
+    # Test that dict is sorted by key
+    for col in [0, 3]:
+        for row in range(3):
+            print(row, col, repr(data(editor.model(), row, col)))
+    assert False
 
 
 def test_rename_and_duplicate_item_in_collection_editor():
