@@ -222,7 +222,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
 
         if (
             coll_filter is not None
-            and not self.remote 
+            and not self.remote
             and isinstance(data, (tuple, list, dict, set, frozenset))
         ):
             data = coll_filter(data)
@@ -635,7 +635,9 @@ class BaseHeaderView(QHeaderView):
     def __init__(self, parent=None):
         super(BaseHeaderView, self).__init__(Qt.Horizontal, parent)
         self._handle_section_is_pressed = False
+        self.previous_sort = -1
         self.sectionResized.connect(self.sectionResizeEvent)
+        self.sortIndicatorChanged.connect(self.sortIndicatorChangedEvent)
         # Needed to enable sorting by column
         # See spyder-ide/spyder#9835
         self.setSectionsClickable(True)
@@ -652,6 +654,17 @@ class BaseHeaderView(QHeaderView):
     def sectionResizeEvent(self, logicalIndex, oldSize, newSize):
         if self._handle_section_is_pressed:
             self.sig_user_resized_section.emit(logicalIndex, oldSize, newSize)
+
+    def sortIndicatorChangedEvent(self, logical_index, order):
+        if (
+            logical_index != -1
+            and self.sortIndicatorOrder() == Qt.AscendingOrder
+            and self.isSortIndicatorShown()
+            and self.previous_sort == logical_index
+        ):
+            self.setSortIndicator(-1, Qt.DescendingOrder)
+        else:
+            self.previous_sort = logical_index
 
 
 class BaseTableView(QTableView, SpyderWidgetMixin):
