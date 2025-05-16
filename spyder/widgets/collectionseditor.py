@@ -323,6 +323,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
     def sort(self, column, order=Qt.AscendingOrder):
         """Overriding sort method"""
 
+        print(f'sort: {column=}, {order=}')
         def all_string(listlike):
             return all([isinstance(x, str) for x in listlike])
 
@@ -656,15 +657,21 @@ class BaseHeaderView(QHeaderView):
             self.sig_user_resized_section.emit(logicalIndex, oldSize, newSize)
 
     def sortIndicatorChangedEvent(self, logical_index, order):
+        print(f'sortIndicatorChangedEvent: {logical_index=}, {order=}')
         if (
             logical_index != -1
             and self.sortIndicatorOrder() == Qt.AscendingOrder
             and self.isSortIndicatorShown()
             and self.previous_sort == logical_index
         ):
-            self.setSortIndicator(-1, Qt.DescendingOrder)
+            print('sortIndicatorChangedEvent: change to unsorted')
+            self.setSortIndicator(logical_index, Qt.DescendingOrder)
+            self.setSortIndicatorShown(False)
         else:
+            print('sortIndicatorChangedEvent: default branch')
             self.previous_sort = logical_index
+            self.setSortIndicatorShown(True)
+        print('sortIndicatorChangedEvent: done')
 
 
 class BaseTableView(QTableView, SpyderWidgetMixin):
