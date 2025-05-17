@@ -201,6 +201,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
         self.minmax = minmax
         self.remote = remote
         self.header0 = None
+        self.previous_sort = -1
         self._data = None
         self.total_rows = None
         self.showndata = None
@@ -326,10 +327,26 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
         def all_string(listlike):
             return all([isinstance(x, str) for x in listlike])
 
+        print(f'sort: {column=}, {order=}')
+        print(f'sort: {self.previous_sort=}')
+        header = self._parent.horizontalHeader()
+        if (
+            order == Qt.AscendingOrder
+            and column != -1
+            and self.previous_sort == column
+        ):
+            print('sort: Changing to unsorted')
+            header.setSortIndicator(-1, Qt.AscendingOrder)
+            return
+
+        self.previous_sort = column
         reverse = (order == Qt.DescendingOrder)
         sort_key = natsort if all_string(self.keys) else None
 
-        if column == 0:
+        if column == -1:
+            self.keys = list(self._data.keys())
+            self.set_size_and_type()
+        elif column == 0:
             self.sizes = sort_against(self.sizes, self.keys,
                                       reverse=reverse,
                                       sort_key=natsort)
