@@ -334,6 +334,7 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
             order == Qt.AscendingOrder
             and column != -1
             and self.previous_sort == column
+            and isinstance(self._data, dict)
         ):
             print('sort: Changing to unsorted')
             header.setSortIndicator(-1, Qt.AscendingOrder)
