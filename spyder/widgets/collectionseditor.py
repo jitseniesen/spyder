@@ -329,9 +329,15 @@ class ReadOnlyCollectionsModel(QAbstractTableModel, SpyderFontsMixin):
 
         print(f'sort: {column=}, {order=}')
         print(f'sort: {self.previous_sort=}')
-        header = self._parent.horizontalHeader()
+        try:
+            header = self._parent.horizontalHeader()
+        except AttributeError:
+            # may happen in tests
+            header = None
+
         if (
-            order == Qt.AscendingOrder
+            header
+            and order == Qt.AscendingOrder
             and column != -1
             and self.previous_sort == column
             and isinstance(self._data, dict)
