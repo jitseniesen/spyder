@@ -214,13 +214,27 @@ def global_max(col_vals, index):
 
 class DataFrameModel(QAbstractTableModel, SpyderFontsMixin):
     """
-    DataFrame Table Model.
+    Model encapsulating a dataframe for the datafgrame editor
+
+    This is a model (in the sense of the Qt model/view architecture).
 
     Partly based in ExtDataModel and ExtFrameModel classes
     of the gtabview project.
 
     For more information please see:
     https://github.com/wavexx/gtabview/blob/master/gtabview/models.py
+
+    Parameters
+    ----------
+    dataFrame : DataFrame
+        The dataframe encapsulated by the model.
+    format_spec : str, optional
+        Format specification for floats. The default is DEFAULT_FORMAT.
+    parent : Optional[QWidget], optional
+        The parent widget for the model. The default is None.
+    readonly : bool, optional
+        If True, the underlying dataframe can not be edited by the user.
+        The default is False.
 
     Attributes
     ----------
@@ -681,7 +695,33 @@ class DataFrameModel(QAbstractTableModel, SpyderFontsMixin):
 
 class DataFrameView(QTableView, SpyderWidgetMixin):
     """
-    Data Frame view class.
+    View displaying a dataframe in the dataframe editor
+
+    This is a view (in the sense of the Qt model/view architecture) that is
+    used in the dataframe editor to display a dataframe. It only shows the
+    data but not the index (row headings) or header (column names).
+
+    Parameters
+    ----------
+    parent : Optional[QWidget]
+        The parent widget.
+    model : DataFrameModel
+        Model encapsulating the displayed dataframe.
+    header : QHeaderView
+        The header (column names) of the view.
+    hscroll : QScrollBar
+        The horizontal scroll bar.
+    vscroll : QScrollBar
+        The vertical scroll bar.
+    namespacebrowser : Optional[NamespaceBrowser], optional
+        The namespace browser that opened the editor containing this view.
+        The default is None.
+    data_function : Optional[Callable[[], Any]], optional
+        A function which returns the new data frame when the user clicks on
+        the Refresh button. The default is None.
+    readonly : bool, optional
+        If True, then the user can not edit the dataframe. The default is
+        False.
 
     Signals
     -------
@@ -705,7 +745,6 @@ class DataFrameView(QTableView, SpyderWidgetMixin):
         data_function: Optional[Callable[[], Any]] = None,
         readonly: bool = False
     ):
-        """Constructor."""
         QTableView.__init__(self, parent)
 
         self.namespacebrowser = namespacebrowser
@@ -1783,9 +1822,28 @@ class DataFrameEditor(BaseDialog, SpyderWidgetMixin):
     """
     Dialog for displaying and editing DataFrame and related objects.
 
+    The main portion of the dialog is a table displaying the data. The column
+    names are displayed above the table nd the row index is displayed to the
+    left of the table. Above this all is a toolbar and below it all are buttons
+    for closing the dialog and saving the data.
+
     Based on the gtabview project (ExtTableView).
     For more information please see:
     https://github.com/wavexx/gtabview/blob/master/gtabview/viewer.py
+
+    Parameters
+    ----------
+    parent : Optional[QWidget]
+        The parent widget.
+    namespacebrowser : Optional[NamespaceBrowser], optional
+        The namespace browser that opened the editor containing this view.
+        The default is None.
+    data_function : Optional[Callable[[], Any]], optional
+        A function which returns the new data frame when the user clicks on
+        the Refresh button. The default is None.
+    readonly : bool, optional
+        If True, then the user can not edit the dataframe. The default is
+        False.
     """
     CONF_SECTION = 'variable_explorer'
 
