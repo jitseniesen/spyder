@@ -69,6 +69,7 @@ class VariableExplorerContextMenuActions:
     PasteAction = 'paste_action'
     CopyAction = 'copy'
     EditAction = 'edit_action'
+    Editv2Action = 'edit_v2_action'
     PlotAction = 'plot_action'
     HistogramAction = 'histogram_action'
     ImshowAction = 'imshow_action'
@@ -226,6 +227,13 @@ class VariableExplorerWidget(ShellConnectMainWidget):
             triggered=self.edit_item
         )
 
+        self.edit_v2_action = self.create_action(
+            VariableExplorerContextMenuActions.Editv2Action,
+            _("Edit v2"),
+            icon=self.create_icon('edit'),
+            triggered=self.edit_v2_item
+        )
+
         self.plot_action = self.create_action(
             VariableExplorerContextMenuActions.PlotAction,
             _("Plot"),
@@ -349,7 +357,8 @@ class VariableExplorerWidget(ShellConnectMainWidget):
         # ---- Context menu to show when there are variables present
         self.context_menu = self.create_menu(
             VariableExplorerWidgetMenus.PopulatedContextMenu)
-        for item in [self.edit_action, self.copy_action, self.paste_action,
+        for item in [self.edit_action, self.edit_v2_action,
+                     self.copy_action, self.paste_action,
                      self.rename_action, self.remove_action,
                      self.save_array_action]:
             self.add_item_to_menu(
@@ -649,6 +658,9 @@ class VariableExplorerWidget(ShellConnectMainWidget):
     def edit_item(self):
         self._current_editor.edit_item()
 
+    def edit_v2_item(self):
+        pass
+
     def plot_item(self):
         self._current_editor.plot_item('plot')
 
@@ -700,6 +712,7 @@ class VariableExplorerWidget(ShellConnectMainWidget):
         editor.paste_action = self.paste_action
         editor.copy_action = self.copy_action
         editor.edit_action = self.edit_action
+        editor.edit_v2_action = self.edit_v2_action
         editor.plot_action = self.plot_action
         editor.hist_action = self.hist_action
         editor.imshow_action = self.imshow_action
